@@ -192,7 +192,7 @@ int main()
         cin.clear();
         while (cin.get() != '\n')
             continue;
-        cout << "Error ";
+        cout << "Errors ";
     }
     //task 2
     cout << "Unreal" << endll << "Engine";
