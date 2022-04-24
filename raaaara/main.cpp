@@ -6,195 +6,140 @@
 #include <vector>
 #include <fstream>
 using namespace std;
-
-/*
-class Card {
-public:
-    enum cardvalue
-    {
-        one = 1,
-        two = 2,
-        three = 3,
-        four = 4,
-        five = 5,
-        six = 6,
-        seven = 7,
-        eight = 8,
-        nine = 9,
-        ten = 10,
-        jack = 11,
-        queen = 12,
-        king = 13
-    };
-    enum suit
-    {
-        CLUBS,
-        DIAMONDS,
-        HEARTS,
-        SPADES
-    };
-};
-
-template<typename type>
-/*class Hand
-{
-public:
-    Hand()
-    {
-        m_Cards.reserve(7);
-    }
-
-    virtual ~Hand()
-    {
-        Clear();
-    }
-
-    void Add(Card* pCard)
-    {
-        m_Cards.push_back(pCard);
-    }
-
-    void Clear()
-    {
-        std::vector<Card*>::iterator iter = m_Cards.begin();
-        for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-        {
-            delete* iter;
-            *iter = nullptr;
-        }
-
-        m_Cards.clear();
-    }
-
-    int GetValue() const
-    {
-        if (m_Cards.empty() || m_Cards[0]->GetValue() == 0)
-            return 0;
-
-        int total = 0;
-        std::vector<Card*>::const_iterator iter;
-
-        for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-            total += (*iter)->GetValue();
-
-        bool containsAce = false;
-        for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-            if ((*iter)->GetValue() == Card::ACE)
-                containsAce = true;
-
-        if (containsAce && total <= 11) total += 10;
-
-        return total;
-    }*
-
-protected:
-    std::vector<Card*> m_Cards;
-};
-*/
-class GenericPlayer : public Hand
+class Date
 {
 private:
-    friend ostream& operator<<(ostream& os, const GenericPlayer& aGenericPlayer);
-protected:
-    string theName;
+	int m_day;
+	int m_month;
+	int m_year;
 public:
-    GenericPlayer(const string& name = " ") : theName(name) { }
+	Date(int day, int month, int year) : m_day(day), m_month(month), m_year(year) {}
 
-    virtual ~GenericPlayer();
+	const int& getDay() const
+	{
+		return m_day;
+	}
 
-    virtual bool IsHitting() const = 0;
+	const int& getMonth() const
+	{
+		return m_month;
+	}
 
-    bool IsBoosted() const
-    {
-        return (GetValue() > 21);
-    }
+	const int& getYear() const
+	{
+		return m_year;
+	}
 
-    void Bust() const
-    {
-        cout << theName << " It's too much." << endl;
-    }
+	friend std::ostream& operator<<(std::ostream& os, const Date& d)
+	{
+		os << d.m_day << '.' << d.m_month << '.' << d.m_year;
+
+		return os;
+	}
 };
-//task 3
-class Player : public GenericPlayer
+
+template <class T>
+class _ptr
 {
+private:
+	T* m_ptr;
 public:
-    Player(const string& name = "") : GenericPlayer(name) { }
+	_ptr(T* ptr = nullptr) : m_ptr(ptr) {}
+	~_ptr() { delete m_ptr; }
 
-    virtual ~Player() { }
+	_ptr(_ptr& p)
+	{
+		m_ptr = p.m_ptr;
+		p.m_ptr = nullptr;
+	}
 
-    virtual bool IsHitting() const
-    {
-        cout << theName << ", do you want a hit? (Y/N): ";
-        char response;
-        cin >> response;
-        return (response == 'y' || response == 'Y');
-    }
+	_ptr& operator=(_ptr& p)
+	{
+		if (&p == this)
+			return *this;
 
-    void Win() const
-    {
-        cout << theName << " wins.\n";
-    }
+		delete m_ptr;
+		m_ptr = p.m_ptr;
+		p.m_ptr = nullptr;
 
-    void Lose() const
-    {
-        cout << theName << " lost.\n";
-    }
+		return *this;
+	}
 
-    void Push() const
-    {
-        cout << theName << " pushes.\n";
-    }
+	T& operator*() const { return *m_ptr; }
+	T* operator->() const { return m_ptr; }
+
+	bool isNull() const { return m_ptr == nullptr; }
 };
-//task 4
-class House : public GenericPlayer
+
+const _ptr<Date>& compares_dates(const _ptr<Date>&, const _ptr<Date>&);
+
+void task1()
 {
-public:
-    House(const string& name = "House") : GenericPlayer(name) { }
+	_ptr<Date> today(new Date(24, 04, 2022));
 
-    virtual ~House() { }
+	std::cout << "День: " << today->getDay() << std::endl;
+	std::cout << "Меясяц: " << today->getMonth() << std::endl;
+	std::cout << "Год: " << today->getYear() << std::endl;
+	std::cout << "Сегодня: " << *today << std::endl;
 
-    virtual bool IsHitting() const
-    {
-        return (GetValue() <= 16);
-    }
+	_ptr<Date> date;
 
-    void FlipFirstCard()
-    {
-        if (!(m_Cards.empty()))
-            m_Cards[0]->Flip();
-        else
-            cout << "No Cards!\n";
-    }
-};
-//task 5
-ostream& operator<<(ostream& os, const Card& aCard)
-{
-    const string RANKS[] = { "0", "A", "2", "3", "4", "5", "6", "7", "8", "9",
-                            "10", "J", "Q", "K" };
-    const string SUITS[] = { "c", "d", "h", "s" };
+	std::cout << "Сегодня " << (today.isNull() ? "ШОК АНО НУЛЕВОЕ\n" : "ненулевое\n");
+	std::cout << "Дата " << (date.isNull() ? "ШОК АНО НУЛЕВОЕ\n" : "нотнулевое\n");
 
-    if (aCard.IsFaceUp)
-        os << RANKS[aCard.m_Rank] << SUITS[aCard.m_Suit];
-    else
-        os << "XX";
+	date = today;
 
-    return os;
+	std::cout << "Сегодня " << (today.isNull() ? "ДАЛАДHА АНО НУЛЕВОЕ\n" : "нЕ Нулеове\n");
+	std::cout << "Дата " << (date.isNull() ? "ано нульевоье\n" : "не нулевое почeму\n");
+
+	std::cout << "Дата: " << *date << std::endl;
 }
-//task 2
-#define endll endl<<endl
+const _ptr<Date>& compares_dates(const _ptr<Date>& a, const _ptr<Date>& b)
+{
+	if (a->getYear() > b->getYear())
+		return a;
+	else if (a->getYear() < b->getYear())
+		return b;
+	else
+	{
+		if (a->getMonth() > b->getMonth())
+			return a;
+		else if (a->getMonth() < b->getMonth())
+			return b;
+		else
+		{
+			if (a->getDay() > b->getDay())
+				return a;
+			else
+				return b;
+		}
+	}
+}
+
+void swap_dates(_ptr<Date>& a, _ptr<Date>& b)
+{
+	_ptr<Date> temp;
+	temp = a;
+	a = b;
+	b = temp;
+}
+void task2()
+{
+	_ptr<Date> date1(new Date(22, 04, 2022));
+	_ptr<Date> date2(new Date(23, 04, 2022));
+	_ptr<Date> date3(new Date(24, 04, 2022));
+
+	std::cout << *compares_dates(date1, date2) << std::endl;
+	swap_dates(date2, date3);
+	std::cout << *compares_dates(date1, date2) << std::endl;
+}
+
+
+
 
 int main()
 {
-    //task 1
-    int num;
-    while (!(cin >> num))
-    {
-        cin.clear();
-        while (cin.get() != '\n')
-            continue;
-        cout << "Error ";
-    }
-    //task 2
-    cout << "Unreal" << endll << "Engine";
-    return 0;
+	task1();
+	task2();
+	return 0;
 }
