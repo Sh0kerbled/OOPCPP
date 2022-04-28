@@ -6,140 +6,159 @@
 #include <vector>
 #include <fstream>
 using namespace std;
-class Date
-{
-private:
-	int m_day;
-	int m_month;
-	int m_year;
+
+/*namespace zero {
+	class DivisionByZero {
+		string message;
+	public:
+		DivisionByZero(string themessage = "") : message(themessage) { }
+		const string& getMessage() const { return message; }
+	};
+	template <typename dbz>
+	dbz div(dbz a, dbz b) {
+		if (b == 0)
+			throw DivisionByZero("Division By Zero");
+		return a / b;
+				
+	}
+}*/
+class Ex {
 public:
-	Date(int day, int month, int year) : m_day(day), m_month(month), m_year(year) {}
-
-	const int& getDay() const
-	{
-		return m_day;
-	}
-
-	const int& getMonth() const
-	{
-		return m_month;
-	}
-
-	const int& getYear() const
-	{
-		return m_year;
-	}
-
-	friend std::ostream& operator<<(std::ostream& os, const Date& d)
-	{
-		os << d.m_day << '.' << d.m_month << '.' << d.m_year;
-
-		return os;
+	double x;
+	Ex(const double& xia) :x(xia){}
+		~Ex(){}
+};
+class Bar {
+	double y;
+public:
+	Bar() { y = 0; }
+	~Bar(){}
+	void g(const double& a) {
+		if (y + a <= 100) {
+			y = a;
+		}
+		else throw Ex(y * a);
 	}
 };
-
-template <class T>
-class _ptr
+//task 3
+class illegalCommand
 {
 private:
-	T* m_ptr;
+	int pos_x;
+	int pos_y;
+	int newPos_x;
+	int newPos_y;
+	string message;
 public:
-	_ptr(T* ptr = nullptr) : m_ptr(ptr) {}
-	~_ptr() { delete m_ptr; }
-
-	_ptr(_ptr& p)
+	illegalCommand(int c_x, int c_y, int n_x, int n_y) :
+		pos_x(c_x), pos_y(c_y), newPos_x(n_x), newPos_y(n_y), message("")
 	{
-		m_ptr = p.m_ptr;
-		p.m_ptr = nullptr;
-	}
-
-	_ptr& operator=(_ptr& p)
-	{
-		if (&p == this)
-			return *this;
-
-		delete m_ptr;
-		m_ptr = p.m_ptr;
-		p.m_ptr = nullptr;
-
-		return *this;
-	}
-
-	T& operator*() const { return *m_ptr; }
-	T* operator->() const { return m_ptr; }
-
-	bool isNull() const { return m_ptr == nullptr; }
-};
-
-const _ptr<Date>& compares_dates(const _ptr<Date>&, const _ptr<Date>&);
-
-void task1()
-{
-	_ptr<Date> today(new Date(24, 04, 2022));
-
-	std::cout << "День: " << today->getDay() << std::endl;
-	std::cout << "Меясяц: " << today->getMonth() << std::endl;
-	std::cout << "Год: " << today->getYear() << std::endl;
-	std::cout << "Сегодня: " << *today << std::endl;
-
-	_ptr<Date> date;
-
-	std::cout << "Сегодня " << (today.isNull() ? "ШОК АНО НУЛЕВОЕ\n" : "ненулевое\n");
-	std::cout << "Дата " << (date.isNull() ? "ШОК АНО НУЛЕВОЕ\n" : "нотнулевое\n");
-
-	date = today;
-
-	std::cout << "Сегодня " << (today.isNull() ? "ДАЛАДHА АНО НУЛЕВОЕ\n" : "нЕ Нулеове\n");
-	std::cout << "Дата " << (date.isNull() ? "ано нульевоье\n" : "не нулевое почeму\n");
-
-	std::cout << "Дата: " << *date << std::endl;
-}
-const _ptr<Date>& compares_dates(const _ptr<Date>& a, const _ptr<Date>& b)
-{
-	if (a->getYear() > b->getYear())
-		return a;
-	else if (a->getYear() < b->getYear())
-		return b;
-	else
-	{
-		if (a->getMonth() > b->getMonth())
-			return a;
-		else if (a->getMonth() < b->getMonth())
-			return b;
-		else
+		if (abs(pos_x - newPos_x) > 1)
 		{
-			if (a->getDay() > b->getDay())
-				return a;
-			else
-				return b;
+			message += "X coord is TOO big!\n";
+			message += to_string(pos_x) + to_string(pos_y) + to_string(newPos_x) + to_string(newPos_y) + "\n";
+		}
+
+		if (abs(pos_y - newPos_y) > 1)
+		{
+			message += "bro sheesh Y coord is too big!\n";
+			message += to_string(pos_x) + to_string(pos_y) + to_string(newPos_x) + to_string(newPos_y) + "\n";
+		}
+
+		if (pos_x == newPos_x && pos_y == newPos_y)
+		{
+			message += "I CANT SteP Here\n";
+			message += to_string(pos_x) + to_string(pos_y) + to_string(newPos_x) + to_string(newPos_y) + "\n";
 		}
 	}
-}
 
-void swap_dates(_ptr<Date>& a, _ptr<Date>& b)
+	const string& getInfo() const
+	{
+		return message;
+	}
+};
+
+class OffTheField {
+	int pos_x;
+	int pos_y;
+	int newPos_x;
+	int newPos_y;
+	string message;
+public:
+	OffTheField(int ax, int ay, int bx, int by) : pos_x(ax), pos_y(ay), newPos_x(bx), newPos_y(by), message("") {
+		if (abs(pos_x - newPos_x) > 1) {
+			message += "Too big coord for me!\n";
+			message += to_string(pos_x) + to_string(pos_y) + to_string(newPos_x) + to_string(newPos_y) + "\n";
+		}
+		if (pos_x == newPos_x && pos_y == newPos_y)
+		{
+			message += "I cant't step here!\n";
+			message += '[' + std::to_string(pos_x) + to_string(pos_y) + to_string(newPos_x) + ';' + to_string(newPos_y) + "\n";
+		}
+	}
+	const std::string& getInfo() const
+	{
+		return message;
+	}
+};
+class Robot
 {
-	_ptr<Date> temp;
-	temp = a;
-	a = b;
-	b = temp;
-}
-void task2()
-{
-	_ptr<Date> date1(new Date(22, 04, 2022));
-	_ptr<Date> date2(new Date(23, 04, 2022));
-	_ptr<Date> date3(new Date(24, 04, 2022));
+private:
+	int pos_x;
+	int pos_y;
+public:
+	Robot(int x = 5, int y = 5) : pos_x(x), pos_y(y)
+	{
+		std::cout << pos_x << "," << pos_y << std::endl;
+	}
 
-	std::cout << *compares_dates(date1, date2) << std::endl;
-	swap_dates(date2, date3);
-	std::cout << *compares_dates(date1, date2) << std::endl;
-}
+	void move(int x, int y)
+	{
+		if (abs(pos_x - x) > 1 || abs(pos_y - y) > 1 || (pos_x == x && pos_y == y))
+			throw illegalCommand(pos_x, pos_y, x, y);
+		if (x > 10 || x < 1 || y > 10 || y < 1)
+			throw OffTheField(pos_x, pos_y, x, y);
 
+		std::cout << pos_x << "," << pos_y << x << "," << y << std::endl;
 
-
+		pos_x = x;
+		pos_y = y;
+	}
+};
 
 int main()
 {
-	task1();
-	task2();
-	return 0;
+	/*try {
+		double result = zero::div(34, 0);
+		cout << result << endl;
+	}
+	catch (const zero::DivisionByZero& c) {
+		cerr << c.getMessage() << endl;
+	}
+	return 0;*/
+
+	int x = 0, y = 0;
+	Robot r;
+
+	while (true)
+	{
+		std::cin >> x >> y;
+
+		if (x == 0 && y == 0)
+			break;
+
+		try
+		{
+			r.move(x, y);
+		}
+		catch (const illegalCommand& e)
+		{
+			std::cerr << e.getInfo() << std::endl;
+		}
+		catch (const OffTheField& e)
+		{
+			std::cerr << e.getInfo() << std::endl;
+		}
+	}
+
 }
