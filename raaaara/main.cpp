@@ -1,200 +1,97 @@
 ﻿#include <iostream>
-#include <cstdint>
-#include <string>
-#include <cmath>
-#include <cassert>
 #include <vector>
+#include <optional>
+#include <tuple>
+#include <string>
 #include <fstream>
 using namespace std;
-
-/*
-class Card {
+//task 1
+class Person {
+private:
+	vector<tuple<string, string, string>> people;
 public:
-    enum cardvalue
-    {
-        one = 1,
-        two = 2,
-        three = 3,
-        four = 4,
-        five = 5,
-        six = 6,
-        seven = 7,
-        eight = 8,
-        nine = 9,
-        ten = 10,
-        jack = 11,
-        queen = 12,
-        king = 13
-    };
-    enum suit
-    {
-        CLUBS,
-        DIAMONDS,
-        HEARTS,
-        SPADES
-    };
+	Person() {
+		people = {
+		{"Nurgaziev", "Dauren", "Kairatovich"}
+		};
+	}
+	pair<bool, string> FindPerson(string find_patronymic) {
+		for (const auto& [surname, name, patronymic] : people) {
+			if (surname == find_patronymic) {
+				return { true, patronymic };
+			}
+		}
+		return { false, "" };
+	}
+
 };
+//-----------------------------------------------------------------------------------------------------------------
+//task 2
 
-template<typename type>
-/*class Hand
-{
-public:
-    Hand()
-    {
-        m_Cards.reserve(7);
-    }
-
-    virtual ~Hand()
-    {
-        Clear();
-    }
-
-    void Add(Card* pCard)
-    {
-        m_Cards.push_back(pCard);
-    }
-
-    void Clear()
-    {
-        std::vector<Card*>::iterator iter = m_Cards.begin();
-        for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-        {
-            delete* iter;
-            *iter = nullptr;
-        }
-
-        m_Cards.clear();
-    }
-
-    int GetValue() const
-    {
-        if (m_Cards.empty() || m_Cards[0]->GetValue() == 0)
-            return 0;
-
-        int total = 0;
-        std::vector<Card*>::const_iterator iter;
-
-        for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-            total += (*iter)->GetValue();
-
-        bool containsAce = false;
-        for (iter = m_Cards.begin(); iter != m_Cards.end(); ++iter)
-            if ((*iter)->GetValue() == Card::ACE)
-                containsAce = true;
-
-        if (containsAce && total <= 11) total += 10;
-
-        return total;
-    }*
-
-protected:
-    std::vector<Card*> m_Cards;
-};
-*/
-class GenericPlayer : public Hand
+/*struct PhoneNumber
 {
 private:
-    friend ostream& operator<<(ostream& os, const GenericPlayer& aGenericPlayer);
-protected:
-    string theName;
+	vector<tuple<int, int, string, optional<int> >> phonenum;
+	int countryNum;
+	int cityNum;
+	string justNum;
+	optional<int> addedNum = nullopt;
 public:
-    GenericPlayer(const string& name = " ") : theName(name) { }
+	PhoneNumber() {
+		phonenum = {
+			{7, 911, "123456", 12}
+		};
+	}
+	pair<string,optional<int>> FindNum(string findnumb) {
+		for (const auto& [countryNum, cityNum, justNum, addedNum] : phonenum) {
+			if (justNum == findnumb) {
+				return {justNum, addedNum};
+			}
+		}
+	}
 
-    virtual ~GenericPlayer();
-
-    virtual bool IsHitting() const = 0;
-
-    bool IsBoosted() const
-    {
-        return (GetValue() > 21);
-    }
-
-    void Bust() const
-    {
-        cout << theName << " It's too much." << endl;
-    }
-};
-//task 3
-class Player : public GenericPlayer
+};*/
+struct PhoneNumber
 {
-public:
-    Player(const string& name = "") : GenericPlayer(name) { }
-
-    virtual ~Player() { }
-
-    virtual bool IsHitting() const
-    {
-        cout << theName << ", do you want a hit? (Y/N): ";
-        char response;
-        cin >> response;
-        return (response == 'y' || response == 'Y');
-    }
-
-    void Win() const
-    {
-        cout << theName << " wins.\n";
-    }
-
-    void Lose() const
-    {
-        cout << theName << " lost.\n";
-    }
-
-    void Push() const
-    {
-        cout << theName << " pushes.\n";
-    }
+	int country_code;
+	int city_code;
+	string number;
+	optional<int> additional_number;
 };
-//task 4
-class House : public GenericPlayer
+bool operator<(const PhoneNumber& p1, const PhoneNumber& p2)
 {
-public:
-    House(const string& name = "House") : GenericPlayer(name) { }
-
-    virtual ~House() { }
-
-    virtual bool IsHitting() const
-    {
-        return (GetValue() <= 16);
-    }
-
-    void FlipFirstCard()
-    {
-        if (!(m_Cards.empty()))
-            m_Cards[0]->Flip();
-        else
-            cout << "No Cards!\n";
-    }
-};
-//task 5
-ostream& operator<<(ostream& os, const Card& aCard)
-{
-    const string RANKS[] = { "0", "A", "2", "3", "4", "5", "6", "7", "8", "9",
-                            "10", "J", "Q", "K" };
-    const string SUITS[] = { "c", "d", "h", "s" };
-
-    if (aCard.IsFaceUp)
-        os << RANKS[aCard.m_Rank] << SUITS[aCard.m_Suit];
-    else
-        os << "XX";
-
-    return os;
+	return tie(p1.country_code, p1.city_code, p1.number, p1.additional_number) < tie(p2.country_code, p2.city_code, p2.number, p2.additional_number);
 }
-//task 2
-#define endll endl<<endl
+
+optional<int> getOptInt(string& s)
+{
+	if (s == "")
+	{
+		return nullopt;
+	}
+
+	return stoi(s);
+}
+
+ostream& operator<<(ostream& out, const PhoneNumber& p)
+{
+	out << '+' << p.country_code << '(' << p.city_code << ')' << p.number;
+
+	if (p.additional_number.has_value())
+	{
+		out << ' ' << p.additional_number.value();
+	}
+
+	return out;
+}
 
 int main()
 {
-    //task 1
-    int num;
-    while (!(cin >> num))
-    {
-        cin.clear();
-        while (cin.get() != '\n')
-            continue;
-        cout << "Error ";
-    }
-    //task 2
-    cout << "Unreal" << endll << "Engine";
-    return 0;
+	Person people_list;
+	bool success;
+	string surname;
+	tie(success, surname) = people_list.FindPerson("Nurgaziev");
+	cout << success << " " << surname << endl;
+	tie(success, surname) = people_list.FindPerson("Taganov");
+	cout << success << " " << surname << endl;
 }
